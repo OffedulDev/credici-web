@@ -1,8 +1,9 @@
-import { initializeApp } from "firebase/app";
+import { FirebaseOptions, initializeApp } from "firebase/app";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBmJUDvjThCEXG_2Bjv4zeni4__Q4MVMiU",
   authDomain: "credici-giornalino-scolastico.firebaseapp.com",
+  databaseURL: "https://credici-giornalino-scolastico-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "credici-giornalino-scolastico",
   storageBucket: "credici-giornalino-scolastico.appspot.com",
   messagingSenderId: "36413562956",

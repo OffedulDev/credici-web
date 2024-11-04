@@ -1,15 +1,24 @@
 import { Newspaper, Search } from '@mui/icons-material'
 import { AppBar, IconButton, InputBase, Paper, Toolbar, Typography } from '@mui/material'
-import React, { PropsWithChildren } from 'react'
+import React, { PropsWithChildren, useRef } from 'react'
+import { Outlet, useNavigate } from 'react-router-dom'
 
-export default function MainLayout({ children }: PropsWithChildren) {
+export default function MainLayout() {
+    const navigate = useNavigate()
+    let searchRef = useRef<HTMLInputElement>()
+
     return (
         <>
             <AppBar position="static">
                 <Toolbar>
-                    <Newspaper sx={{
-                        fontSize: "2rem"
-                    }}/>
+                    <IconButton onClick={() => {
+                        navigate("/")
+                    }}>
+                        <Newspaper sx={{
+                            color: "white",
+                            fontSize: "2rem"
+                        }}/>
+                    </IconButton>
                     <Paper component="form" sx={{
                         marginLeft: "1rem"
                     }}>
@@ -17,6 +26,16 @@ export default function MainLayout({ children }: PropsWithChildren) {
                             placeholder='Cerca'
                             sx={{
                                 marginLeft: "0.5rem"
+                            }}
+                            inputRef={searchRef}
+
+                            onChange={() => {
+                                if (!searchRef.current) { return }
+                                if (searchRef.current.value.trim().length <= 0) { 
+                                    navigate("/")
+                                    return 
+                                }
+                                navigate(`/search/${searchRef.current.value}`)
                             }}
                         />
                         <IconButton type="button">
@@ -26,20 +45,22 @@ export default function MainLayout({ children }: PropsWithChildren) {
                 </Toolbar>
             </AppBar>
             <div style={{
-                maxWidth: "100vw",
-                overflow: "scroll"
             }}>
-                {children}
+                <Outlet />
             </div>
             <footer style={{
-                position: "absolute",
+                position: "fixed",
                 bottom: "0.35rem",
-                width: "100%",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                left: "50%",
+                transform: "translate(-50%, 0)",
+                justifyContent: "center",
             }}>
-                <Typography variant="caption" align='center'>Sito realizzato per il giornalino scolastico <b>© 2024 Credici</b></Typography>
+                <Typography variant="caption" align='center' padding="1rem" style={{
+                    backgroundColor: 'white',
+                    borderRadius: "2rem"
+                }}>Sito realizzato per il giornalino scolastico <b>© 2024 Credici</b></Typography>
             </footer>
         </>
     )
