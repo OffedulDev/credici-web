@@ -1,11 +1,12 @@
 import { Newspaper, Search } from '@mui/icons-material'
-import { AppBar, IconButton, InputBase, Paper, Toolbar, Typography } from '@mui/material'
+import { AppBar, IconButton, InputBase, Paper, Toolbar, Typography, useColorScheme } from '@mui/material'
 import React, { PropsWithChildren, useRef } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 
 export default function MainLayout() {
     const navigate = useNavigate()
     let searchRef = useRef<HTMLInputElement>()
+    let { mode, setMode } = useColorScheme()
 
     return (
         <>
@@ -58,7 +59,8 @@ export default function MainLayout() {
                 justifyContent: "center",
             }}>
                 <Typography variant="caption" align='center' padding="1rem" style={{
-                    backgroundColor: 'white',
+                    backgroundColor: mode === "dark" ? 'rgb(18, 18, 18)' : "white",
+                    color: mode === "dark" ? "white" : "black",
                     borderRadius: "2rem"
                 }}>Sito realizzato per il giornalino scolastico <b>© 2024 Credici</b></Typography>
             </footer>
