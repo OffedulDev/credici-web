@@ -6,22 +6,10 @@ import { IconButton, Typography } from '@mui/material'
 import MediaCard from './mediaCard'
 
 function Search() {
-    const navigate = useNavigate()
     const { searchResults, query }: any = useLoaderData()
-    console.log(searchResults)
 
     return (
         <div>
-            <IconButton sx={{ 
-                paddingTop: "1rem",
-                paddingRight: "1rem",
-                paddingLeft: "1rem",
-                fontSize: "2rem"
-            }}onClick={() => {
-                navigate("/")
-            }}>
-                <icons.Home />
-            </IconButton>
             <div style={{
                 display: "flex",
                 flexDirection: "row",
@@ -34,8 +22,9 @@ function Search() {
 
             <div style={{
                 display: "grid",
-                marginLeft: "0.25rem",
-                marginRight: "0.25rem"
+                marginLeft: "1.5rem",
+                marginRight: "0.5rem",
+                rowGap: "1rem"
             }}>
                 {searchResults.map((value: any, index: number) => {
                     return <MediaCard key={index} value={value} index={index} />

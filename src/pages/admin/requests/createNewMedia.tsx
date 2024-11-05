@@ -75,7 +75,25 @@ export const createNewMediaRequestRoute = {
                   }
                 )
                 await uploadPromise
-              } 
+              } else if(contentKind === "text") {
+                let pdf: File = formData.get("content-text") as File
+                let uploadPromise = firebaseStorage.uploadBytes(
+                  firebaseStorage.ref(firebaseStorage.getStorage(), `/texts/${id}`),
+                  pdf
+                )
+
+                updates[`/media/${id}`]["text"] = `/texts/${id}`
+
+                toast.promise(
+                  uploadPromise,
+                  {
+                    pending: "Documento in caricamento...",
+                    success: "Documento caricato",
+                    error: "Errore nel caricamento del documento."
+                  }
+                )
+                await uploadPromise
+              }
     
               if (headerImage.name.trim().length > 0) {
                 toast.promise(

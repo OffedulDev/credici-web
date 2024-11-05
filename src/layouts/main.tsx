@@ -49,6 +49,9 @@ export default function MainLayout() {
             }}>
                 <Outlet />
             </div>
+            <div style={{
+                paddingTop: "4rem"
+            }}/>
             <footer style={{
                 position: "fixed",
                 bottom: "0.35rem",
@@ -59,6 +62,7 @@ export default function MainLayout() {
                 justifyContent: "center",
             }}>
                 <Typography variant="caption" align='center' padding="1rem" style={{
+                    textWrap: "nowrap",
                     backgroundColor: mode === "dark" ? 'rgb(18, 18, 18)' : "white",
                     color: mode === "dark" ? "white" : "black",
                     borderRadius: "2rem"

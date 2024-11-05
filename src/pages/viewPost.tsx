@@ -4,6 +4,36 @@ import * as firebaseStorage from 'firebase/storage'
 import React, { useEffect, useState } from 'react'
 import { RouteObject, useLoaderData, useNavigate } from 'react-router-dom'
 
+function TextPost({postData, id}: any) {
+    let [textURL, setTextURL] = useState<string>()
+    useEffect(() => {
+        firebaseStorage.getDownloadURL(
+            firebaseStorage.ref(firebaseStorage.getStorage(), `/texts/${id}`)
+        ).then((downloadURL) => {
+            setTextURL(downloadURL)
+        })
+    }, [])
+
+    return (
+        <>
+            {textURL ? <div>
+                <iframe src={textURL} style={{
+                    width: "100%",
+                    height: "55vh"
+                }} />
+            </div> : <div style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%"
+            }}>
+                <CircularProgress />
+                <Typography>Caricamento del documento...</Typography>
+            </div>}
+        </>
+    )
+}
+
 function VideoPost({postData, id}: any) {
     let [videoURL, setVideoURL] = useState<string>()
     useEffect(() => {
@@ -43,6 +73,7 @@ function PostInformations({ postData, id }: any) {
     return (
         <>
             {postData.contentKind === "video" && <VideoPost postData={postData} id={id} />}
+            {postData.contentKind === "text" && <TextPost postData={postData} id={id} />}
         </>
     )
 }

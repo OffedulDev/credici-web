@@ -93,9 +93,11 @@ export default function CreateNewMedia() {
 
                     {/* Kind specific options */}
                     {kind === 'text' && (
-                        <Typography>
-                            Text
-                        </Typography>
+                        <FormControl>
+                            <FormLabel>Testo*</FormLabel>
+                            <Input type='file' name='content-text'/>
+                            <FormHelperText>Il pdf verrà caricato sul cloud di Firebase, in caso non ci sia più spazio il caricamento potrebbe fallire</FormHelperText>
+                        </FormControl>
                     )}
                     {kind === 'video' && (
                         <FormControl>
