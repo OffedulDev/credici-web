@@ -6,7 +6,7 @@ const theme: Theme = createTheme({
         light: true
     },
     palette: {
-        mode: 'dark',
+        mode: 'light',
     }
 })
 
