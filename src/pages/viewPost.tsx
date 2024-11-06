@@ -8,7 +8,7 @@ function TextPost({postData, id}: any) {
     let [textURL, setTextURL] = useState<string>()
     useEffect(() => {
         firebaseStorage.getDownloadURL(
-            firebaseStorage.ref(firebaseStorage.getStorage(), `/texts/${id}`)
+            firebaseStorage.ref(firebaseStorage.getStorage(), postData.file)
         ).then((downloadURL) => {
             setTextURL(downloadURL)
         })
@@ -38,7 +38,7 @@ function VideoPost({postData, id}: any) {
     let [videoURL, setVideoURL] = useState<string>()
     useEffect(() => {
         firebaseStorage.getDownloadURL(
-            firebaseStorage.ref(firebaseStorage.getStorage(), `/videos/${id}`)
+            firebaseStorage.ref(firebaseStorage.getStorage(), postData.file)
         ).then((downloadURL) => {
             setVideoURL(downloadURL)
         })
@@ -115,7 +115,7 @@ function ViewPost() {
                     justifyContent: "center",
                     flexDirection: "column"
                 }}>
-                    <Typography fontSize="2.5rem" fontWeight="bold" color={imageURL ? 'white' : 'textPrimary'}>{postData.title}</Typography>
+                    <Typography align="center" fontSize="2.5rem" fontWeight="bold" color={imageURL ? 'white' : 'textPrimary'}>{postData.title}</Typography>
                     <Button onClick={() => {
                         navigate("/")
                     }} variant='contained'>Torna indietro</Button>

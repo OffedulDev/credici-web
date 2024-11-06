@@ -47,6 +47,8 @@ export const searchRoute = {
         const compareQuery = (data: any) => {
             if (searchText?.startsWith("category:")) {
                 return data.category.toLowerCase().includes(searchText?.slice(10, searchText?.length).toLowerCase())
+            } else if (searchText?.startsWith("id:")) {
+                return data.id === searchText?.slice(3, searchText?.length)
             } else {
                 return data.title.toLowerCase().includes(searchText?.toLowerCase())
             }
@@ -61,9 +63,9 @@ export const searchRoute = {
         } else {
             var results: any[] = []
             snapshot.forEach((childSnapshot) => {
-                let data = childSnapshot.val()
+                let data = {id: childSnapshot.key, ...childSnapshot.val()}
                 if (compareQuery(data)) {
-                    results.push({id: childSnapshot.key, ...data});
+                    results.push(data);
                 }
             })
             return {

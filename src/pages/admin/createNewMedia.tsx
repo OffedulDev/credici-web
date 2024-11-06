@@ -3,9 +3,12 @@ import { Button, Checkbox, FormControl, FormControlLabel, FormHelperText, FormLa
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { get, getDatabase, ref } from 'firebase/database'
 import React, { useState } from 'react'
-import { Form } from 'react-router-dom'
+import {Form, useNavigate} from 'react-router-dom'
 
 export default function CreateNewMedia() {
+    const navigate = useNavigate()
+
+    // Categories
     let [categories, setCategories] = useState([])
     onAuthStateChanged(getAuth(), (user) => {
         if (user === undefined) {
@@ -41,6 +44,7 @@ export default function CreateNewMedia() {
                 paddingLeft: "0.6rem",
                 paddingRight: "0.6rem"
             }}>
+                <Button onClick={() => navigate(`/admin/dashboard`)}>Torna indietro</Button>
                 <Typography sx={{
                     display: "flex",
                     alignItems: "center",

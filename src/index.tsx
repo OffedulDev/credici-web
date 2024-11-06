@@ -1,4 +1,4 @@
-import { CssBaseline, ThemeProvider, Typography } from '@mui/material';
+import {CssBaseline, ThemeProvider, Typography, useColorScheme} from '@mui/material';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -20,13 +20,15 @@ import initFirebase from './utils/firebase';
 import { DataSnapshot, get, getDatabase, ref, set } from 'firebase/database'
 
 // react-toastify
-import { ToastContainer } from 'react-toastify';
-import { getAuth, signOut } from 'firebase/auth';
+import {toast, ToastContainer} from 'react-toastify';
+import {getAuth, onAuthStateChanged, signOut} from 'firebase/auth';
 import CreateNewMedia from './pages/admin/createNewMedia';
 import { createNewCategoryRoute } from './pages/admin/requests/createNewCategory';
 import { createNewMediaRequestRoute } from './pages/admin/requests/createNewMedia';
 import { viewPostRoute } from './pages/viewPost';
 import { searchRoute } from './pages/search';
+import {dashboardRoute} from "./pages/admin/dashboard";
+import {manageArticlesRoute} from "./pages/admin/manageArticles";
 
 // Services
 initFirebase()
@@ -41,6 +43,8 @@ const websiteRouter = createBrowserRouter([
         path: 'admin',
         element: <SecurePageWrapper />,
         children: [
+          dashboardRoute,
+          manageArticlesRoute,
           {
             path: 'createNewMedia',
             element: <CreateNewMedia />
@@ -60,6 +64,29 @@ const websiteRouter = createBrowserRouter([
           {
             path: 'login',
             element: <Login />
+          },
+          {
+            path: 'logout',
+            loader: async ({params, request}) => {
+              toast.info("Disconnessione avviata.")
+              onAuthStateChanged(
+                  getAuth(),
+                  (user) => {
+                    if (user) {
+                      toast.promise(
+                          signOut(getAuth()).catch((err) => toast.error(err)),
+                          {
+                            pending: "Disconnessione in corso...",
+                            success: "Disconnessione effettuata!",
+                            error: "Errore nella disconnessione."
+                          }
+                      )
+                    }
+                  }
+              )
+
+              throw redirect("/")
+            }
           }
         ]
       },
@@ -72,7 +99,6 @@ const websiteRouter = createBrowserRouter([
     ]
   }
 ])
-
 
 // Page rendering
 const root = ReactDOM.createRoot(

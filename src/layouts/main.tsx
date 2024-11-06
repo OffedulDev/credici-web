@@ -1,5 +1,5 @@
-import { Newspaper, Search } from '@mui/icons-material'
-import { AppBar, IconButton, InputBase, Paper, Toolbar, Typography, useColorScheme } from '@mui/material'
+import {DarkMode, LightMode, Login, Newspaper, Search} from '@mui/icons-material'
+import {AppBar, Button, IconButton, InputBase, Paper, Toolbar, Typography, useColorScheme} from '@mui/material'
 import React, { PropsWithChildren, useRef } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 
@@ -43,6 +43,20 @@ export default function MainLayout() {
                             <Search />
                         </IconButton>
                     </Paper>
+                    <IconButton style={{
+                        marginLeft: "auto"
+                    }} onClick={() => navigate(`/admin/dashboard/`)}>
+                        <Login style={{color: "white"}} />
+                    </IconButton>
+                    <IconButton onClick={() => {
+                        if (mode === "light") {
+                            setMode("dark")
+                        } else {
+                            setMode("light")
+                        }
+                    }}>
+                        {mode === "light" ? <DarkMode sx={{color: "white"}} /> : <LightMode />}
+                    </IconButton>
                 </Toolbar>
             </AppBar>
             <div style={{

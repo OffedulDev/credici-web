@@ -4,8 +4,10 @@ import { FirebaseError } from 'firebase/app';
 import { getAuth, signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
 import React, { useRef } from 'react'
 import { toast } from 'react-toastify';
+import {useNavigate} from "react-router-dom";
 
 export default function Login() {
+    const navigate = useNavigate()
     const emailReference = useRef<HTMLInputElement>()
     const passwordReference = useRef<HTMLInputElement>()
     const handleLogin = () => {
@@ -32,6 +34,9 @@ export default function Login() {
 
         loginPromise.catch((error: FirebaseError) => {
             toast.error(error.message)
+        })
+        loginPromise.then(() => {
+            navigate(`/admin/dashboard`)
         })
 
         toast.promise(

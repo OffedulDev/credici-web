@@ -64,7 +64,7 @@ export const createNewMediaRequestRoute = {
                   video
                 )
     
-                updates[`/media/${id}`]["video"] = `/videos/${id}`
+                updates[`/media/${id}`]["file"] = `/videos/${id}`
     
                 toast.promise(
                   uploadPromise,
@@ -82,7 +82,7 @@ export const createNewMediaRequestRoute = {
                   pdf
                 )
 
-                updates[`/media/${id}`]["text"] = `/texts/${id}`
+                updates[`/media/${id}`]["file"] = `/texts/${id}`
 
                 toast.promise(
                   uploadPromise,
@@ -118,6 +118,6 @@ export const createNewMediaRequestRoute = {
       }
 
       await doRestrictedActions()
-      throw redirect("/admin/createNewMedia")
+      throw redirect("/admin/dashboard")
     }
 } as RouteObject
