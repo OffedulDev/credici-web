@@ -75,6 +75,11 @@ export default function CreateNewMedia() {
                             })}
                         </Select>
                     </FormControl>
+                    <FormControl fullWidth>
+                        <FormLabel>Breve descrizione*</FormLabel>
+                        <OutlinedInput type='text' name='desc' required />
+                        <FormHelperText>Testo mostrato sotto all'articolo</FormHelperText>
+                    </FormControl>
                     <FormControl style={{
                         flexDirection: "row",
                         alignItems: "center"

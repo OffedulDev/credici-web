@@ -36,7 +36,7 @@ export default function MediaCard({isDesktop, index, value}: any) {
         <CardHeader title={value.title} subheader={value.category} />
         <CardContent>
             <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-                Questo è un esempio di slogano della notizia, qui si può scrivere un corto testo di descrizione!
+                {value.desc}
             </Typography>
         </CardContent>
         <CardActions style={{

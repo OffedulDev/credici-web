@@ -57,6 +57,25 @@ function ArticleRow({value, index}: any) {
             )
         }
 
+        if (value.images.header !== false) {
+            let headerImageDeletionPromise = firebaseStorage.deleteObject(
+                firebaseStorage.ref(
+                    firebaseStorage.getStorage(),
+                    value.images.header
+                )
+            ).catch((err) => toast.error(err))
+
+            promises.push(headerImageDeletionPromise)
+            toast.promise(
+                headerImageDeletionPromise,
+                {
+                    pending: "Eliminazione dell'immagine associata...",
+                    success: "Immagine associata eliminata con successo!",
+                    error: "Errore nell'eliminazione dell'immagine associata."
+                }
+            )
+        }
+
         let elementDeletionPromise = remove(
             ref(
                 getDatabase(),

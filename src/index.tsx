@@ -69,12 +69,12 @@ const websiteRouter = createBrowserRouter([
             path: 'logout',
             loader: async ({params, request}) => {
               toast.info("Disconnessione avviata.")
-              onAuthStateChanged(
+              let disconnect = onAuthStateChanged(
                   getAuth(),
                   (user) => {
                     if (user) {
                       toast.promise(
-                          signOut(getAuth()).catch((err) => toast.error(err)),
+                          signOut(getAuth()).catch((err) => toast.error(err)).finally(() => disconnect()),
                           {
                             pending: "Disconnessione in corso...",
                             success: "Disconnessione effettuata!",

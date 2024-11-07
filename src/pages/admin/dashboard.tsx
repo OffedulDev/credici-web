@@ -194,5 +194,5 @@ function Dashboard() {
 export const dashboardRoute = {
     path: 'dashboard',
     element: <Dashboard />,
-    loader: getLoader
+    loader: getLoader()
 } as RouteObject

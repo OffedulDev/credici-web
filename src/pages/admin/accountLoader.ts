@@ -19,11 +19,9 @@ export default function getLoader() {
         }
 
         try {
-            await waitForAccount()
+            return await waitForAccount()
         } catch {
             throw redirect(`/auth/login`)
         }
-
-        return null
     };
 }

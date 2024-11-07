@@ -3,6 +3,7 @@ import { get, getDatabase, ref } from 'firebase/database'
 import * as firebaseStorage from 'firebase/storage'
 import React, { useEffect, useState } from 'react'
 import { RouteObject, useLoaderData, useNavigate } from 'react-router-dom'
+import PdfRenderer from "../utils/pdfRenderer";
 
 function TextPost({postData, id}: any) {
     let [textURL, setTextURL] = useState<string>()
@@ -16,12 +17,7 @@ function TextPost({postData, id}: any) {
 
     return (
         <>
-            {textURL ? <div>
-                <iframe src={textURL} style={{
-                    width: "100%",
-                    height: "55vh"
-                }} />
-            </div> : <div style={{
+            {textURL ? <PdfRenderer url={textURL} /> : <div style={{
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
@@ -96,8 +92,8 @@ function ViewPost() {
             setImageURL(downloadURL)
         })
     }, [])
-    console.log(postData)
 
+    let textColor = imageURL ? 'white' : 'textPrimary'
     return (
         <>
             <div style={{
@@ -115,10 +111,8 @@ function ViewPost() {
                     justifyContent: "center",
                     flexDirection: "column"
                 }}>
-                    <Typography align="center" fontSize="2.5rem" fontWeight="bold" color={imageURL ? 'white' : 'textPrimary'}>{postData.title}</Typography>
-                    <Button onClick={() => {
-                        navigate("/")
-                    }} variant='contained'>Torna indietro</Button>
+                    <Typography align="center" fontSize="2.5rem" fontWeight="bold" color={textColor}>{postData.title}</Typography>
+                    <Typography variant='caption' color={textColor} marginBottom="1.5rem">{postData.desc}</Typography>
                 </div>
             </div>
             <PostInformations postData={postData} id={id} />

@@ -15,6 +15,7 @@ export const createNewMediaRequestRoute = {
       let title = formData.get("title")
       let category = formData.get("category")
       let isHeadline = formData.get("headline")
+      let desc = formData.get("desc")
       let contentKind = formData.get("content-kind")
 
       let headerImage: File = formData.get("header-image") as File
@@ -47,6 +48,7 @@ export const createNewMediaRequestRoute = {
                 "category": category,
                 "isHeadline": isHeadline,
                 "contentKind": contentKind,
+                "desc": desc,
                 "images": {
                   "header": (headerImage.name.trim().length > 0) ? `/headers/${id}` : false
                 } 
