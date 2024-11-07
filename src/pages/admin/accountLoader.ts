@@ -8,7 +8,7 @@ export default function getLoader() {
                 onAuthStateChanged(
                     getAuth(),
                     (user) => {
-                        if (user !== undefined) {
+                        if (user !== undefined && user !== null) {
                             resolve(user)
                         } else {
                             reject("logged out")

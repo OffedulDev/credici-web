@@ -1,10 +1,12 @@
-import { Button, CircularProgress, Typography } from '@mui/material'
+import {Button, CircularProgress, Typography, useMediaQuery} from '@mui/material'
 import { get, getDatabase, ref } from 'firebase/database'
 import * as firebaseStorage from 'firebase/storage'
 import React, { useEffect, useState } from 'react'
 import { RouteObject, useLoaderData, useNavigate } from 'react-router-dom'
 import PdfRenderer from "../utils/pdfRenderer";
+import {ArticleRounded, Category, PermIdentity} from "@mui/icons-material";
 
+// Render the different post kinds
 function TextPost({postData, id}: any) {
     let [textURL, setTextURL] = useState<string>()
     useEffect(() => {
@@ -74,10 +76,96 @@ function PostInformations({ postData, id }: any) {
     )
 }
 
+// Headers
+function DesktopHeader(props: { imageURL: string | undefined, postData: any, id: any }) {
+    let [hovered, setHovered] = useState<boolean>(false)
+
+    return <div style={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "start",
+    }}>
+        <img
+            style={{
+                borderRadius: "1rem",
+                width: "35%"
+            }}
+            src={props.imageURL ? props.imageURL : "https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
+        />
+
+        <div style={{
+            marginLeft: "1rem"
+        }}>
+            <Typography fontSize="2rem" fontWeight="bold">{props.postData.title}</Typography>
+            <Typography variant="caption">{props.postData.desc}</Typography>
+
+            <div style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center"
+            }}>
+                <Category/>
+                <Typography fontWeight="semibold">Categoria: {props.postData.category}</Typography>
+            </div>
+            <div style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center"
+            }}>
+                <PermIdentity />
+                <Typography fontWeight="semibold"
+                    onMouseEnter={() => setHovered(true)}
+                    onMouseLeave={() => setHovered(false)}
+                >ID: {hovered ? props.id : "metti il mouse"}</Typography>
+            </div>
+        </div>
+    </div>;
+}
+
+function MobileHeader(props: { imageURL: string | undefined, postData: any }) {
+    return <div style={{
+        display: "flex",
+        width: "100%",
+        flexDirection: "column"
+    }}>
+        <img
+            style={{
+                height: "20vh",
+                width: "100%"
+            }}
+            src={props.imageURL ? `${props.imageURL}` : `https://images.unsplash.com/photo-1580582932707-520aed937b7b?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`}
+        />
+        <div style={{
+            marginTop: "0.5rem",
+            display: "flex",
+            paddingLeft: "0.5rem",
+            paddingRight: "0.5rem",
+            flexDirection: "column",
+        }}>
+            <div style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: "0.5rem"
+            }}>
+                <ArticleRounded/>
+                <Typography style={{textWrap: "pretty"}} fontSize="1.5rem"
+                            fontWeight="bold">{props.postData.title}</Typography>
+            </div>
+            <Typography style={{
+                justifySelf: "end",
+                textWrap: "pretty"
+            }} align="right" variant="caption">{props.postData.desc}</Typography>
+        </div>
+    </div>;
+}
+
+// Main component
 function ViewPost() {
     const navigate = useNavigate()
-    const { postData, id }: any = useLoaderData()
     let [imageURL, setImageURL] = useState<string>()
+    const { postData, id }: any = useLoaderData()
+    const isDesktop = useMediaQuery('(min-width: 500px)');
 
     useEffect(() => {
         // Get image
@@ -93,30 +181,24 @@ function ViewPost() {
         })
     }, [])
 
-    let textColor = imageURL ? 'white' : 'textPrimary'
+
     return (
-        <>
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center"
+        }}>
             <div style={{
-                backgroundImage: `url(${imageURL})`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundPosition: "center",
-                backgroundSize: "cover"
+                padding: isDesktop ? "1rem" : 0,
+                marginBottom: "1.25rem"
             }}>
-                <div style={{
-                    padding: "4rem",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexDirection: "column"
-                }}>
-                    <Typography align="center" fontSize="2.5rem" fontWeight="bold" color={textColor}>{postData.title}</Typography>
-                    <Typography variant='caption' color={textColor} marginBottom="1.5rem">{postData.desc}</Typography>
-                </div>
+                {isDesktop ? <DesktopHeader imageURL={imageURL} postData={postData} id={id}/> : <MobileHeader imageURL={imageURL} postData={postData}/>}
             </div>
-            <PostInformations postData={postData} id={id} />
-        </>
+
+            {/* Render the content */}
+            <PostInformations postData={postData} />
+        </div>
     )
 }
 
