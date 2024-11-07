@@ -22,18 +22,17 @@ const pdfRenderer = ({ url }) => {
         });
     };
     return (
-        <div>
-            <div
-                id="pdf-div"
-                className="full-window-div"
-                style={{
-                    height: "75vh"
-                }}
-                onDocumentLoad={loadPDF()}
-                >
+        <div
+            id="pdf-div"
+            className="full-window-div"
+            style={{
+                width: "100%",
+                height: "75vh"
+            }}
+            onDocumentLoad={loadPDF()}
+            >
 
-            </div>
-</div>
-);
+        </div>
+    );
 };
 export default pdfRenderer;

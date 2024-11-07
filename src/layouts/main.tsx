@@ -1,12 +1,14 @@
-import {DarkMode, LightMode, Login, Newspaper, Search} from '@mui/icons-material'
-import {AppBar, Button, IconButton, InputBase, Paper, Toolbar, Typography, useColorScheme} from '@mui/material'
-import React, { PropsWithChildren, useRef } from 'react'
+import {AdminPanelSettings, DarkMode, LightMode, Login, Newspaper, Search} from '@mui/icons-material'
+import {AppBar, Button, IconButton, InputBase, Paper, Toolbar, Tooltip, Typography, useColorScheme} from '@mui/material'
+import React, {PropsWithChildren, useRef, useState} from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
+import {getAuth, onAuthStateChanged} from "firebase/auth";
 
 export default function MainLayout() {
     const navigate = useNavigate()
     let searchRef = useRef<HTMLInputElement>()
     let { mode, setMode } = useColorScheme()
+    let logged = getAuth().currentUser !== null
 
     return (
         <>
@@ -43,11 +45,13 @@ export default function MainLayout() {
                             <Search />
                         </IconButton>
                     </Paper>
-                    <IconButton style={{
-                        marginLeft: "auto"
-                    }} onClick={() => navigate(`/admin/dashboard/`)}>
-                        <Login style={{color: "white"}} />
-                    </IconButton>
+                    <Tooltip title={logged ? "Pannello di gestione" : "Accedi"}>
+                        <IconButton style={{
+                            marginLeft: "auto"
+                        }} onClick={() => navigate(`/admin/dashboard/`)}>
+                            {logged ? <AdminPanelSettings style={{color: 'white'}} /> : <Login style={{color: "white"}} />}
+                        </IconButton>
+                    </Tooltip>
                     <IconButton onClick={() => {
                         if (mode === "light") {
                             setMode("dark")
