@@ -24,7 +24,7 @@ export const createNewMediaRequestRoute = {
       const doRestrictedActions = () =>  {
         return new Promise((resolve, reject) => {
           onAuthStateChanged(getAuth(), async (user) => {
-            if (user === undefined) {
+            if (user === null) {
               return
             }
     

@@ -11,7 +11,7 @@ export default function CreateNewMedia() {
     // Categories
     let [categories, setCategories] = useState([])
     onAuthStateChanged(getAuth(), (user) => {
-        if (user === undefined) {
+        if (user === null) {
             return
         }
 
