@@ -13,7 +13,7 @@ import {
     Typography,
     useMediaQuery
 } from "@mui/material";
-import {Article, ElectricalServices, Home, Logout, ManageHistory, SpeedRounded} from "@mui/icons-material";
+import {AddLink, Article, ElectricalServices, Home, Logout, ManageHistory, SpeedRounded} from "@mui/icons-material";
 import TextWithIcon from "../../utils/TextWithIcon";
 import {get, getDatabase, ref, update} from "firebase/database";
 import {toast} from "react-toastify";
@@ -110,6 +110,11 @@ function Dashboard() {
                             navigate(`../manageArticles`)
                         }}>
                             Gestisci gli articoli
+                        </Button>
+                        <Button variant='contained' startIcon={<AddLink />} onClick={() => {
+                            navigate(`../newAdmin`)
+                        }}>
+                            Aggiungi un admin
                         </Button>
                     </div>
                 </div>

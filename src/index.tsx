@@ -29,6 +29,8 @@ import { viewPostRoute } from './pages/viewPost';
 import { searchRoute } from './pages/search';
 import {dashboardRoute} from "./pages/admin/dashboard";
 import {manageArticlesRoute} from "./pages/admin/manageArticles";
+import {newAdminRoute} from "./pages/admin/newAdmin";
+import {newAdminRequestRoute} from "./pages/admin/requests/newAdmin";
 
 // Services
 initFirebase()
@@ -45,6 +47,7 @@ const websiteRouter = createBrowserRouter([
         children: [
           dashboardRoute,
           manageArticlesRoute,
+          newAdminRoute,
           {
             path: 'createNewMedia',
             element: <CreateNewMedia />
@@ -53,7 +56,8 @@ const websiteRouter = createBrowserRouter([
             path: 'requests',
             children: [
               createNewMediaRequestRoute,
-              createNewCategoryRoute
+              createNewCategoryRoute,
+              newAdminRequestRoute
             ]
           }
         ]
