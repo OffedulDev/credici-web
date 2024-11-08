@@ -19,6 +19,7 @@ export default function MediaCard({isDesktop, index, value}: any) {
     }, [])
 
     return <Card style={{
+        minWidth: isDesktop ? "25vw" : "75vw",
         maxWidth: isDesktop ? "25vw" : "75vw",
         maxHeight: "20rem",
         display: "flex",

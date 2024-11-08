@@ -97,6 +97,7 @@ export default function CreateNewMedia() {
                             <FormControlLabel value='text' control={<Radio />} label='Testo' />
                             <FormControlLabel value='video' control={<Radio />} label='Video' />
                             <FormControlLabel value='audio' control={<Radio />} label='Audio' />
+                            <FormControlLabel value='drive' control={<Radio />} label='Drive (FILE GRANDI)' />
                         </RadioGroup>
                     </FormControl>
 
@@ -119,6 +120,13 @@ export default function CreateNewMedia() {
                         <Typography>
                             Audio
                         </Typography>
+                    )}
+                    {kind === 'drive' && (
+                        <FormControl>
+                            <FormLabel>Link file di Drive*</FormLabel>
+                            <OutlinedInput type='text' name='content-drive' placeholder="https://drive.google.com//file/d/.../preview"/>
+                            <FormHelperText>Il file verrà reso disponibile sul sito, in caso di video/foto un anteprima riproducibile verrà mostrata</FormHelperText>
+                        </FormControl>
                     )}
 
                     <FormControl>

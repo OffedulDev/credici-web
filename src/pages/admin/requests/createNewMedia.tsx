@@ -95,6 +95,12 @@ export const createNewMediaRequestRoute = {
                   }
                 )
                 await uploadPromise
+              } else if(contentKind === "drive") {
+                let driveURL: FormDataEntryValue |  null = formData.get("content-drive")
+                let url = driveURL?.toString().replace(/\/(edit|view|sharing|preview)(\?.*)?$/, "");
+
+                // Add /preview at the end
+                updates[`/media/${id}`]["file"] = `${url}/preview`
               }
     
               if (headerImage.name.trim().length > 0) {

@@ -106,7 +106,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <ThemeProvider theme={theme}>
-    <CssBaseline />
+    <CssBaseline enableColorScheme={true} />
     <RouterProvider router={websiteRouter} />        
     <ToastContainer
       position="bottom-right"

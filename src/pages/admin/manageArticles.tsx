@@ -38,7 +38,7 @@ function ArticleRow({value, index}: any) {
     const deleteArticle = () => {
         let file = value.file
         let promises = []
-        if (file) {
+        if (file && value.contentKind !== "drive") {
             let fileDeletionPromise = firebaseStorage.deleteObject(
                 firebaseStorage.ref(
                     firebaseStorage.getStorage(),

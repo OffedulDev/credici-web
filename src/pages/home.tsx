@@ -3,6 +3,7 @@ import { get, getDatabase, ref } from 'firebase/database'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MediaCard from './mediaCard'
+import * as firebaseStorage from 'firebase/storage'
 import {FilterList, PartyMode, Person2TwoTone, Timer} from '@mui/icons-material'
 
 const HEADLINES_LIMIT_DAYS = 30 // Headlines older than this won't be shown
@@ -12,6 +13,18 @@ export default function Home() {
     let [categories, setCategories] = useState<any[]>([])
     const navigate = useNavigate()
     const isDesktop = useMediaQuery('(min-width: 500px)');
+
+    let [coverURL, setCoverURL] = useState<string>()
+    useEffect(() => {
+        firebaseStorage.getDownloadURL(
+            firebaseStorage.ref(
+                firebaseStorage.getStorage(),
+                `cover.jpg`
+            )
+        ).then((download) => {
+            setCoverURL(download)
+        })
+    }, []);
 
     // Get categories from Firebase
     useEffect(() => {
@@ -91,7 +104,7 @@ export default function Home() {
             flexDirection: "column"  
         }}>
             <div style={{
-                backgroundImage: `url("https://lh3.googleusercontent.com/p/AF1QipM8n6XtaH1kQvuiges1j-vHv3_hd6AaRSQt3bKr=s680-w680-h510")`,
+                backgroundImage: `url("${coverURL}")`,
                 backgroundPosition: "center",
                 backgroundSize: "cover",
                 display: "flex",
