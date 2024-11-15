@@ -8,10 +8,79 @@ import {FilterList, PartyMode, Person2TwoTone, Timer} from '@mui/icons-material'
 
 const HEADLINES_LIMIT_DAYS = 30 // Headlines older than this won't be shown
 
+function CategoryViewer(props: { category: string, isDesktop: boolean }) {
+    let [categoryArticles, setCategoryArticles] = useState<any[]>([])
+    useEffect(() => {
+        get(ref(getDatabase(), `/categories/${props.category}`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                let dataArray: any[] = []
+                let categoryMedia: any[] = snapshot.val().media
+
+                categoryMedia.forEach(async (value, index) => {
+                    get(ref(getDatabase(), `/media/${value}/`)).then((mediaData) => {
+                        if (mediaData.exists()) {
+                            dataArray.push({
+                                id: value,
+                                ... mediaData.val()
+                            })
+                        }
+
+                        if (index === (categoryMedia.length - 1)) {
+                            setCategoryArticles(dataArray)
+                        }
+                    })
+                })
+
+            }
+        })
+    }, []);
+
+    return (
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.25",
+        }}>
+            <Typography align={"center"} padding={"0.25rem"} fontWeight={"bold"}>{props.category}</Typography>
+            <div style={{
+                display: "flex",
+                flexDirection: props.isDesktop ? "column" : "row",
+                gap: "0.25rem",
+            }}>
+                {categoryArticles.map((value, index) => {
+                    return <MediaCard key={index} isDesktop={props.isDesktop} value={value} />
+                })}
+            </div>
+        </div>
+    )
+}
+
 export default function Home() {
-    let [headlines, setHeadlines] = useState<{}[]>()
-    let [categories, setCategories] = useState<any[]>([])
     const navigate = useNavigate()
+    let [headlines, setHeadlines] = useState<{}[]>()
+
+    let [category1, setCategory1] = useState<string>()
+    let [category2, setCategory2] = useState<string>()
+    let [category3, setCategory3] = useState<string>()
+    useEffect(() => {
+        get(ref(getDatabase(), `/headlineCategories/1/`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                setCategory1(snapshot.val())
+            }
+        })
+        get(ref(getDatabase(), `/headlineCategories/2/`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                setCategory2(snapshot.val())
+            }
+        })
+        get(ref(getDatabase(), `/headlineCategories/3/`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                setCategory3(snapshot.val())
+            }
+        })
+    }, []);
+
+    let [categories, setCategories] = useState<any[]>([])
     const isDesktop = useMediaQuery('(min-width: 500px)');
 
     let [coverURL, setCoverURL] = useState<string>()
@@ -46,7 +115,7 @@ export default function Home() {
 
                 resolve(data)
             })
-        } 
+        }
 
         getCategories().then((data) => {
             setCategories(data)
@@ -117,48 +186,52 @@ export default function Home() {
             </div>
 
             <div style={{
-                paddingLeft: "1.5rem",
-                paddingRight: "1.5rem"
+                padding: "1.5rem",
             }}>
-                <h2>Prima pagina</h2>
                 <div style={{
                     display: "flex",
-                    flexDirection: "row",
-                    gap: "0.25rem",
-                    overflowX: "auto",
-                    padding: "0.5rem",
-                    justifySelf: "center",
+                    flexDirection: "column",
+                    justifyContent: "center"
                 }}>
-                    {headlines && headlines.length > 0 ? headlines.map((value: any, index: number) => {
-                        //return <Typography key={index}>{JSON.stringify(value)}</Typography>
-                        return <MediaCard isDesktop={isDesktop} value={value} index={index} key={index}/>
-                    }) : <div style={{
+                    <Typography align={"center"} fontSize={isDesktop ? "2rem" : "1.5rem"}>In evidenza</Typography>
+                    <div style={{
                         display: "flex",
                         flexDirection: "row",
-                        alignItems: "center",
-                        gap: "0.5rem"
+                        gap: "0.25rem",
+                        overflowX: "auto",
+                        padding: "0.5rem",
+                        justifySelf: "center",
+                        justifyContent: "center"
                     }}>
-                        <Timer/>
-                        <Typography>Non c'è nulla qui per ora!</Typography>
-                    </div>}
+                        {headlines && headlines.length > 0 ? headlines.map((value: any, index: number) => {
+                            //return <Typography key={index}>{JSON.stringify(value)}</Typography>
+                            return <MediaCard isDesktop={isDesktop} value={value} index={index} key={index}/>
+                        }) : <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: "0.5rem"
+                        }}>
+                            <Timer/>
+                            <Typography>Non c'è nulla qui per ora!</Typography>
+                        </div>}
+                    </div>
                 </div>
 
-                <h2><FilterList/> Per categoria</h2>
-                <div style={{
-                    width: "100%",
-                    display: "flex",
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    gap: "0.25rem"
-                }}>
-                    {categories.map((value, index) => {
-                        return <Button key={index} variant='contained' onClick={() => {
-                            navigate(`/search/category:${value.name}`)
-                        }}>
-                            {value.name}
-                        </Button>
-                    })}
-                </div>
+                {(category1 && category2 && category3) && (
+                    <div style={{
+                        display: "flex",
+                        flexDirection: isDesktop ? "row" : "column",
+                        gap: "0.25rem",
+                        paddingTop: "1.5rem",
+                        justifyContent: isDesktop ? "space-around" : "center"
+                    }}>
+                        <CategoryViewer category={category1} isDesktop={isDesktop}/>
+                        <CategoryViewer category={category2} isDesktop={isDesktop}/>
+                        <CategoryViewer category={category3} isDesktop={isDesktop}/>
+                    </div>
+                )}
+
             </div>
         </div>
     )

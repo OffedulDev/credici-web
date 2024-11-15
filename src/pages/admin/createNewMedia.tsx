@@ -85,7 +85,7 @@ export default function CreateNewMedia() {
                         alignItems: "center"
                     }}>
                         <span>In prima pagina?</span>
-                        <Checkbox name='headline' style={{
+                        <Checkbox defaultChecked={true} name='headline' style={{
                             marginLeft: "auto"
                         }} />
                     </FormControl>

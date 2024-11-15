@@ -11,51 +11,111 @@ import {
     TableHead,
     TableRow,
     Typography,
-    useMediaQuery
+    Select,
+    useMediaQuery, MenuItem, SelectChangeEvent
 } from "@mui/material";
-import {AddLink, Article, ElectricalServices, Home, Logout, ManageHistory, SpeedRounded} from "@mui/icons-material";
+import {
+    AddLink,
+    Article,
+    Colorize,
+    ElectricalServices,
+    Home,
+    Logout,
+    ManageHistory,
+    SpeedRounded
+} from "@mui/icons-material";
 import TextWithIcon from "../../utils/TextWithIcon";
 import {get, getDatabase, ref, update} from "firebase/database";
 import {toast} from "react-toastify";
 import getLoader from "./accountLoader";
 
 function CategoryRow(props: { value: any }) {
-    let [checked, setChecked] = useState<boolean>(props.value.headline)
-
-    useEffect(() => {
-        if (checked === props.value.headline) {
-            return
-        }
-
-        let updates: any = {}
-        let newCategoryData = props.value
-        newCategoryData.headline = checked
-
-        updates[`/categories/${props.value.name}/`] = newCategoryData
-        toast.promise(
-            update(
-                ref(getDatabase()),
-                updates
-            ).catch((err: any) => toast.error(err)),
-            {
-                pending: "Aggiornamento...",
-                success: "Aggiornato!",
-                error: "Errore nell'aggiornamento"
-            }
-        )
-    }, [checked]);
-
     return <TableRow>
         <TableCell>{props.value.name}</TableCell>
         <TableCell align="right">{props.value.media ? props.value.media.length : "Vuoto"}</TableCell>
-        <TableCell align="right" style={{
-            width: "10%"
-        }}>
-            <Checkbox checked={checked} onClick={() => {
-                setChecked(!checked)
-            }}/>
-        </TableCell>
     </TableRow>;
+}
+
+function HeadlineEditorDialog(props: { for: number }) {
+    let [isDialogOpen, setDialogOpen] = useState(false);
+    let [category, setCategory] = useState<string>("")
+
+    const handleCategoryChange = (event: SelectChangeEvent) => {
+        setCategory(event.target.value as string)
+    }
+
+    let [categories, setCategories] = useState([])
+    onAuthStateChanged(getAuth(), (user) => {
+        if (user === null) {
+            return
+        }
+
+        get(ref(getDatabase(), "/categories/")).then((snapshot) => {
+            if (snapshot.exists()) {
+                const tempCategories: any = []
+                snapshot.forEach((childSnapshot) => {
+                    tempCategories.push(childSnapshot.val())
+                })
+
+                setCategories(tempCategories)
+            }
+        })
+    })
+
+    return (
+        <React.Fragment>
+            <Button variant={"contained"} onClick={() => {
+                setDialogOpen(true);
+            }}>Modifica {props.for}° sezione</Button>
+            <Dialog open={isDialogOpen} onClose={() => setDialogOpen(false)}>
+                <DialogTitle>Modifica la categoria in copertina n. {props.for}</DialogTitle>
+                <Form method="post" action={`/admin/requests/editHeadlineCategory/${props.for}`}>
+                    <div style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        padding: "1rem",
+                        gap: "0.5rem"
+                    }}>
+                        <FormControl>
+                            <FormLabel>Categoria*</FormLabel>
+                            <Select
+                                name='category'
+                                value={category}
+                                required
+                                onChange={handleCategoryChange}
+                            >
+                                {categories.map((value: any, index: number) => {
+                                    return <MenuItem value={value.name} key={index}>{value.name}</MenuItem>
+                                })}
+                            </Select>
+                        </FormControl>
+                        <Button type={"submit"} variant={"contained"} onClick={() => setDialogOpen(false)}>Conferma</Button>
+                    </div>
+                </Form>
+            </Dialog>
+        </React.Fragment>
+    )
+}
+
+function HeadlineEditor() {
+    return <div style={{
+        marginTop: "2rem",
+        display: "flex",
+        flexDirection: "column"
+    }}>
+        <TextWithIcon icon={<Colorize/>} text="Categorie in prima pagina"/>
+
+        {/* Edit dialog */}
+        <div style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: "0.25rem"
+        }}>
+            <HeadlineEditorDialog for={1} />
+            <HeadlineEditorDialog for={2} />
+            <HeadlineEditorDialog for={3} />
+        </div>
+    </div>;
 }
 
 function Dashboard() {
@@ -87,31 +147,31 @@ function Dashboard() {
                     Benvenuto, {userData.email}
                 </Typography>
                 <ButtonGroup variant='contained'>
-                    <Button color='error' startIcon={<Logout />} onClick={() => navigate(`/auth/logout`)}>Esci</Button>
-                    <Button startIcon={<Home />} onClick={() => navigate(`/`)}>Home</Button>
+                    <Button color='error' startIcon={<Logout/>} onClick={() => navigate(`/auth/logout`)}>Esci</Button>
+                    <Button startIcon={<Home/>} onClick={() => navigate(`/`)}>Home</Button>
                 </ButtonGroup>
 
                 <div style={{
                     marginTop: "2rem"
                 }}>
-                    <TextWithIcon icon={<ElectricalServices />} text={"Servizi"} />
+                    <TextWithIcon icon={<ElectricalServices/>} text={"Servizi"}/>
                     <div style={{
                         display: "flex",
                         flexDirection: "column",
                         gap: "0.25rem",
                         width: "fit-content"
                     }}>
-                        <Button variant='contained' startIcon={<Article />} onClick={() => {
+                        <Button variant='contained' startIcon={<Article/>} onClick={() => {
                             navigate(`../createNewMedia`)
                         }}>
                             Crea un nuovo articolo
                         </Button>
-                        <Button variant='contained' startIcon={<ManageHistory />} onClick={() => {
+                        <Button variant='contained' startIcon={<ManageHistory/>} onClick={() => {
                             navigate(`../manageArticles`)
                         }}>
                             Gestisci gli articoli
                         </Button>
-                        <Button variant='contained' startIcon={<AddLink />} onClick={() => {
+                        <Button variant='contained' startIcon={<AddLink/>} onClick={() => {
                             navigate(`../newAdmin`)
                         }}>
                             Aggiungi un admin
@@ -124,13 +184,12 @@ function Dashboard() {
                     display: "flex",
                     flexDirection: "column"
                 }}>
-                    <TextWithIcon icon={<SpeedRounded />} text={"Panoramica rapida"} />
+                    <TextWithIcon icon={<SpeedRounded/>} text={"Panoramica rapida"}/>
                     <Table>
                         <TableHead>
                             <TableRow>
                                 <TableCell>Nome</TableCell>
                                 <TableCell align="right">Articoli</TableCell>
-                                <TableCell align="right">Prima pagina</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -168,16 +227,7 @@ function Dashboard() {
                         >
                             <FormControl>
                                 <FormLabel>Nome</FormLabel>
-                                <OutlinedInput type='text' name="name" fullWidth={true} />
-                            </FormControl>
-                            <FormControl style={{
-                                flexDirection: "row",
-                                alignItems: "center"
-                            }}>
-                                <span>In prima pagina?</span>
-                                <Checkbox name='headline' defaultChecked={true} style={{
-                                    marginLeft: "auto"
-                                }} />
+                                <OutlinedInput type='text' name="name" fullWidth={true}/>
                             </FormControl>
 
                             <Button type='submit' variant='contained' onClick={() => setIsCreatingCategory(false)}>
@@ -187,10 +237,11 @@ function Dashboard() {
                                 marginTop: "1rem",
                                 marginBottom: "0.75rem"
                             }}>La pressione del pulsante crea una nuova categoria che sarà visibile
-                            fin da subito se l'opzione "In prima pagina?" è selezionata</FormHelperText>
+                                fin da subito.</FormHelperText>
                         </Form>
                     </Dialog>
                 </div>
+                <HeadlineEditor/>
             </div>
         </>
     )
