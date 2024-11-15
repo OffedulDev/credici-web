@@ -29,7 +29,7 @@ export default function MediaCard({isDesktop, index, value}: any) {
             <CardMedia
                 component="img"
                 sx={{
-                    height: "30%"
+                    height: "10vh"
                 }}
                 image={headerImg}
             />
