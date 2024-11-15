@@ -12,7 +12,7 @@ function Search() {
         <div>
             <div style={{
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 gap: "0.25rem",
                 padding: "1rem"
             }}>
