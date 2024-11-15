@@ -18,7 +18,6 @@ export const createNewCategoryRoute = {
         new Promise(async (resolve, reject) => {
             let formData = await request.formData()
             let name = formData.get("name")
-            let headline = formData.get("headline")
 
             toast.promise(
                 set(
@@ -28,7 +27,7 @@ export const createNewCategoryRoute = {
                     ),
                     {
                         "name": name,
-                        "headline": headline === 'on',
+                        "description": "Descrizione vuota",
                         "media": []
                     }
                 ).catch((err) => toast.error(err)),
