@@ -101,6 +101,18 @@ export const createNewMediaRequestRoute = {
 
                 // Add /preview at the end
                 updates[`/media/${id}`]["file"] = `${url}/preview`
+              } else if(contentKind === "videoYT") {
+                let driveURL: FormDataEntryValue |  null = formData.get("content-youtube")
+                let videoId = driveURL?.toString().match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+                if (videoId === null || videoId === undefined || videoId.length < 2) {
+                  toast.error("URL errato!")
+                  return
+                }
+
+                let parsedId = videoId[1]
+
+                // Format URL
+                updates[`/media/${id}`]["file"] = `https://www.youtube.com/embed/${parsedId}`
               }
     
               if (headerImage.name.trim().length > 0) {

@@ -27,6 +27,7 @@ export const createNewCategoryRoute = {
                     ),
                     {
                         "name": name,
+                        "description": "Descrizione vuota",
                         "media": []
                     }
                 ).catch((err) => toast.error(err)),

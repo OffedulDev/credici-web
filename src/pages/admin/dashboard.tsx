@@ -12,7 +12,7 @@ import {
     TableRow,
     Typography,
     Select,
-    useMediaQuery, MenuItem, SelectChangeEvent
+    useMediaQuery, MenuItem, SelectChangeEvent, Input
 } from "@mui/material";
 import {
     AddLink,
@@ -30,9 +30,50 @@ import {toast} from "react-toastify";
 import getLoader from "./accountLoader";
 
 function CategoryRow(props: { value: any }) {
+    let [isDialogOpen, setDialogOpen] = useState<boolean>(false)
+
     return <TableRow>
         <TableCell>{props.value.name}</TableCell>
         <TableCell align="right">{props.value.media ? props.value.media.length : "Vuoto"}</TableCell>
+        <TableCell align="right">
+            <Button variant={"contained"} onClick={() => {
+                setDialogOpen(true)
+            }}>
+                Modifica
+            </Button>
+        </TableCell>
+
+        <Dialog open={isDialogOpen} onClose={() => setDialogOpen(false)}>
+            <DialogTitle>Modifica categoria</DialogTitle>
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.25rem",
+                padding: "1rem"
+            }}>
+                <Form method="post" action={`/admin/requests/editCategoryDescription/${props.value.name}`} style={{
+                    display: "flex",
+                    flexDirection: "column"
+                }}>
+                    <FormControl>
+                        <FormLabel>Descrizione*</FormLabel>
+                        <OutlinedInput type='text' name='description' required />
+                    </FormControl>
+                    <Button type={"submit"}>Conferma</Button>
+                </Form>
+
+                <Form method="post" action={`/admin/requests/editCategoryImage/${props.value.name}`} encType="multipart/form-data" style={{
+                    display: "flex",
+                    flexDirection: "column"
+                }}>
+                    <FormControl>
+                        <FormLabel>Immagine*</FormLabel>
+                        <Input type='file' name='image' required />
+                    </FormControl>
+                    <Button type={"submit"}>Conferma</Button>
+                </Form>
+            </div>
+        </Dialog>
     </TableRow>;
 }
 
@@ -190,6 +231,7 @@ function Dashboard() {
                             <TableRow>
                                 <TableCell>Nome</TableCell>
                                 <TableCell align="right">Articoli</TableCell>
+                                <TableCell align="right">Azioni</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
