@@ -84,6 +84,7 @@ function PostInformations({ postData, id }: any) {
             {postData.contentKind === "video" && <VideoPost postData={postData} id={id} />}
             {postData.contentKind === "text" && <TextPost postData={postData} id={id} />}
             {postData.contentKind === "drive" && <DrivePost postData={postData} id={id} />}
+            {postData.contentKind === "videoYT" && <DrivePost postData={postData} id={id} />}
         </>
     )
 }

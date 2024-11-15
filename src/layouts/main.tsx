@@ -84,7 +84,7 @@ export default function MainLayout() {
                     backgroundColor: mode === "dark" ? 'rgb(18, 18, 18)' : "white",
                     color: mode === "dark" ? "white" : "black",
                     borderRadius: "2rem"
-                }}>Sito realizzato per il giornalino scolastico <b>© 2024 Credici</b></Typography>
+                }}><b>©2024 #Credici</b></Typography>
             </footer>
         </>
     )

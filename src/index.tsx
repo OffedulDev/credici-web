@@ -31,6 +31,9 @@ import {dashboardRoute} from "./pages/admin/dashboard";
 import {manageArticlesRoute} from "./pages/admin/manageArticles";
 import {newAdminRoute} from "./pages/admin/newAdmin";
 import {newAdminRequestRoute} from "./pages/admin/requests/newAdmin";
+import {editHeadlineCategoryRoute} from "./pages/admin/requests/editHeadlineCategory";
+import {editCategoryDescriptionRoute} from "./pages/admin/requests/editCategoryDescription";
+import {editCategoryImageRoute} from "./pages/admin/requests/editCategoryImage";
 
 // Services
 initFirebase()
@@ -57,7 +60,10 @@ const websiteRouter = createBrowserRouter([
             children: [
               createNewMediaRequestRoute,
               createNewCategoryRoute,
-              newAdminRequestRoute
+              newAdminRequestRoute,
+              editHeadlineCategoryRoute,
+              editCategoryDescriptionRoute,
+              editCategoryImageRoute,
             ]
           }
         ]

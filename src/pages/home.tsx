@@ -1,4 +1,4 @@
-import {Button, Typography, useMediaQuery} from '@mui/material'
+import {Button, Card, CardActions, CardContent, CardHeader, CardMedia, Typography, useMediaQuery} from '@mui/material'
 import { get, getDatabase, ref } from 'firebase/database'
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -6,12 +6,105 @@ import MediaCard from './mediaCard'
 import * as firebaseStorage from 'firebase/storage'
 import {FilterList, PartyMode, Person2TwoTone, Timer} from '@mui/icons-material'
 
-const HEADLINES_LIMIT_DAYS = 30 // Headlines older than this won't be shown
+function isCloserToToday(timestamp1: number, timestamp2: number) {
+    const now = Math.floor(Date.now() / 1000);
+
+    const diff1 = Math.abs(now - timestamp1);
+    const diff2 = Math.abs(now - timestamp2);
+
+    return diff1 < diff2
+}
+
+function CategoryViewer(props: { category: string, isDesktop: boolean}) {
+    const navigate = useNavigate();
+    let [categoryData, setCategoryData] = useState<any>()
+    let [imageURL, setImageURL] = useState<string>()
+
+
+    useEffect(() => {
+        get(
+            ref(getDatabase(), `/categories/${props.category}`)
+        ).then((snapshot) => {
+            if (snapshot.exists()) {
+                setCategoryData(snapshot.val())
+
+                if (snapshot.val().image) {
+                    firebaseStorage.getDownloadURL(firebaseStorage.ref(firebaseStorage.getStorage(), snapshot.val().image)).then((downloadURL) => {
+                        setImageURL(downloadURL)
+                    })
+                }
+            }
+        })
+    }, []);
+
+    return (
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.25",
+        }}>
+            <div style={{
+                display: "flex",
+                flexDirection: props.isDesktop ? "column" : "row",
+                gap: "0.25rem",
+            }}>
+                <Card style={{
+                    minWidth: props.isDesktop ? "25vw" : "75vw",
+                    maxWidth: props.isDesktop ? "25vw" : "75vw",
+                    maxHeight: "20rem",
+                    display: "flex",
+                    flexDirection: "column"
+                }}>
+                    {imageURL && (
+                        <CardMedia
+                            component="img"
+                            sx={{
+                                height: "30%"
+                            }}
+                            image={imageURL}
+                        />
+                    )}
+                    <CardHeader title={props.category} subheader={categoryData ? (categoryData.description ? categoryData.description : "Nessuna descrizione") : "Caricamento..."} />
+                    <CardActions style={{
+                        marginTop: "auto"
+                    }}>
+                        <Button size="small" onClick={() => {
+                            navigate(`/search/category:${props.category}`)
+                        } }>
+                            Visualizza
+                        </Button>
+                    </CardActions>
+                </Card>
+            </div>
+        </div>
+    )
+}
 
 export default function Home() {
-    let [headlines, setHeadlines] = useState<{}[]>()
-    let [categories, setCategories] = useState<any[]>([])
     const navigate = useNavigate()
+    let [headlines, setHeadlines] = useState<{}[]>()
+
+    let [category1, setCategory1] = useState<string>()
+    let [category2, setCategory2] = useState<string>()
+    let [category3, setCategory3] = useState<string>()
+    useEffect(() => {
+        get(ref(getDatabase(), `/headlineCategories/1/`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                setCategory1(snapshot.val())
+            }
+        })
+        get(ref(getDatabase(), `/headlineCategories/2/`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                setCategory2(snapshot.val())
+            }
+        })
+        get(ref(getDatabase(), `/headlineCategories/3/`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                setCategory3(snapshot.val())
+            }
+        })
+    }, []);
+
     const isDesktop = useMediaQuery('(min-width: 500px)');
 
     let [coverURL, setCoverURL] = useState<string>()
@@ -26,64 +119,30 @@ export default function Home() {
         })
     }, []);
 
-    // Get categories from Firebase
-    useEffect(() => {
-        const getCategories: () => Promise<any[]> = () => {
-            return new Promise(async (resolve, reject) => {
-                let categoriesSnapshot = await get(ref(getDatabase(), `/categories/`))
-                if (!categoriesSnapshot.exists()) {
-                    reject("There aren't any categories to load!")
-                    return
-                }
-
-                const data: any[] = [];
-                categoriesSnapshot.forEach((categorySnapshot) => {
-                    let value = categorySnapshot.val()
-                    if (value.headline === true) {
-                        data.push(categorySnapshot.val())
-                    }
-                })
-
-                resolve(data)
-            })
-        } 
-
-        getCategories().then((data) => {
-            setCategories(data)
-        })
-    }, [])
-
     // Get headlines from Firebase
     useEffect(() => {
         const updateHeadlines: () => Promise<any[]> = () => {
             return new Promise(async (resolve) => {
                 const headlinesSnapshot = await get(ref(getDatabase(), `/headline/`))
                 if (headlinesSnapshot.exists()) {
-                    const tempHeadlinesIds: string[] = [];
+                    let mostRecent: any = null;
+                    let mostRecentDate = 0
+
                     headlinesSnapshot.forEach((childSnapshot) => {
-                        let headlineValue = childSnapshot.val()
-                        let differenceDays = (((Date.now() - headlineValue)/1000)/86400)
-                        if (differenceDays < HEADLINES_LIMIT_DAYS) {
-                            tempHeadlinesIds.push(childSnapshot.key)
-                        } else {
-                            console.log("Headline is older than limit.")
+                        if (isCloserToToday(mostRecentDate, childSnapshot.val())) {
+                            mostRecentDate = childSnapshot.val();
+                            mostRecent = childSnapshot.key
                         }
                     })
 
-                    const tempHeadlines: {}[] = [];
-                    // noinspection ES6MissingAwait
-                    tempHeadlinesIds.forEach(async (value, index) => {
-                        let mediaSnapshot = await get(ref(getDatabase(), `/media/${value}/`))
-                        if (mediaSnapshot.exists()) {
-                            tempHeadlines.push({
-                                id: value,
-                                ...mediaSnapshot.val()
-                            })
-                        }
-
-
-                        if (index === (tempHeadlinesIds.length - 1)) {
-                            resolve(tempHeadlines)
+                    get(
+                        ref(getDatabase(), `/media/${mostRecent}/`)
+                    ).then((snapshot) => {
+                        if (snapshot.exists()) {
+                            setHeadlines([{
+                                id: mostRecent,
+                                ...snapshot.val()
+                                }])
                         }
                     })
                 } else  {
@@ -117,47 +176,48 @@ export default function Home() {
             </div>
 
             <div style={{
-                paddingLeft: "1.5rem",
-                paddingRight: "1.5rem"
+                padding: "1.5rem",
             }}>
-                <h2>Prima pagina</h2>
                 <div style={{
                     display: "flex",
-                    flexDirection: "row",
-                    gap: "0.25rem",
-                    overflowX: "auto",
-                    padding: "0.5rem",
-                    justifySelf: "center",
+                    flexDirection: "column",
+                    justifyContent: "center"
                 }}>
-                    {headlines && headlines.length > 0 ? headlines.map((value: any, index: number) => {
-                        //return <Typography key={index}>{JSON.stringify(value)}</Typography>
-                        return <MediaCard isDesktop={isDesktop} value={value} index={index} key={index}/>
-                    }) : <div style={{
+                    <Typography align={"center"} fontSize={isDesktop ? "2rem" : "1.5rem"}>In evidenza</Typography>
+                    <div style={{
                         display: "flex",
                         flexDirection: "row",
-                        alignItems: "center",
-                        gap: "0.5rem"
+                        gap: "0.25rem",
+                        overflowX: "auto",
+                        padding: "0.5rem",
+                        justifySelf: "center",
+                        justifyContent: "center"
                     }}>
-                        <Timer/>
-                        <Typography>Non c'è nulla qui per ora!</Typography>
-                    </div>}
+                        {headlines && headlines.length > 0 ? headlines.map((value: any, index: number) => {
+                            //return <Typography key={index}>{JSON.stringify(value)}</Typography>
+                            return <MediaCard isDesktop={isDesktop} value={value} index={index} key={index}/>
+                        }) : <div style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: "0.5rem"
+                        }}>
+                            <Timer/>
+                            <Typography>Non c'è nulla qui per ora!</Typography>
+                        </div>}
+                    </div>
                 </div>
 
-                <h2><FilterList/> Per categoria</h2>
                 <div style={{
-                    width: "100%",
                     display: "flex",
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    gap: "0.25rem"
+                    flexDirection: isDesktop ? "row" : "column",
+                    gap: "0.25rem",
+                    paddingTop: "1.5rem",
+                    justifyContent: isDesktop ? "space-around" : "center"
                 }}>
-                    {categories.map((value, index) => {
-                        return <Button key={index} variant='contained' onClick={() => {
-                            navigate(`/search/category:${value.name}`)
-                        }}>
-                            {value.name}
-                        </Button>
-                    })}
+                    {category1 && <CategoryViewer category={category1} isDesktop={isDesktop}/>}
+                    {category2 && <CategoryViewer category={category2} isDesktop={isDesktop}/>}
+                    {category3 && <CategoryViewer category={category3} isDesktop={isDesktop}/>}
                 </div>
             </div>
         </div>

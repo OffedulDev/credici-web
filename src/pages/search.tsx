@@ -21,13 +21,13 @@ function Search() {
             </div>
 
             <div style={{
-                display: "grid",
+                display: "flex",
                 marginLeft: "1.5rem",
                 marginRight: "0.5rem",
-                rowGap: "1rem"
+                gap: "0.25rem"
             }}>
                 {searchResults.map((value: any, index: number) => {
-                    return <MediaCard key={index} value={value} index={index} />
+                    return <MediaCard isDesktop={false} key={index} value={value} index={index} />
                 })}
             </div>
         </div>

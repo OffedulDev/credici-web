@@ -85,7 +85,7 @@ export default function CreateNewMedia() {
                         alignItems: "center"
                     }}>
                         <span>In prima pagina?</span>
-                        <Checkbox name='headline' style={{
+                        <Checkbox defaultChecked={true} name='headline' style={{
                             marginLeft: "auto"
                         }} />
                     </FormControl>
@@ -96,7 +96,7 @@ export default function CreateNewMedia() {
                         }}>
                             <FormControlLabel value='text' control={<Radio />} label='Testo' />
                             <FormControlLabel value='video' control={<Radio />} label='Video' />
-                            <FormControlLabel value='audio' control={<Radio />} label='Audio' />
+                            <FormControlLabel value='videoYT' control={<Radio />} label='Video (YOUTUBE)' />
                             <FormControlLabel value='drive' control={<Radio />} label='Drive (FILE GRANDI)' />
                         </RadioGroup>
                     </FormControl>
@@ -128,6 +128,14 @@ export default function CreateNewMedia() {
                             <FormHelperText>Il file verrà reso disponibile sul sito, in caso di video/foto un anteprima riproducibile verrà mostrata</FormHelperText>
                         </FormControl>
                     )}
+                    {kind === 'videoYT' && (
+                        <FormControl>
+                            <FormLabel>Link video di Youtube*</FormLabel>
+                            <OutlinedInput type='text' name='content-youtube' placeholder="https://youtube.com/embed/..."/>
+                            <FormHelperText>Il video verrà reso disponibile sul sito, in caso di video/foto un anteprima riproducibile verrà mostrata</FormHelperText>
+                        </FormControl>
+                    )}
+
 
                     <FormControl>
                         <FormLabel>Immagine di testata</FormLabel>
