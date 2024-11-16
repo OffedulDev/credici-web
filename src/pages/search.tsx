@@ -69,6 +69,13 @@ export const searchRoute = {
                     results.push(data);
                 }
             })
+
+            results.sort((a: any, b: any) => {
+                if (a.timestamp && b.timestamp) {
+                    return a.timestamp < b.timestamp ? 1 : -1
+                }
+                return NaN
+            })
             return {
                 searchResults: results,
                 query: searchText

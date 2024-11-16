@@ -14,7 +14,7 @@ import {
     Dialog, DialogTitle, Button, DialogContentText
 } from "@mui/material";
 import {useEffect, useState} from "react";
-import {get, getDatabase, ref, remove} from "firebase/database";
+import {get, getDatabase, ref, remove, set} from "firebase/database";
 import {CopyAll, Delete, SearchRounded, TextFormat, Videocam} from "@mui/icons-material";
 import * as firebaseStorage from "firebase/storage";
 import {toast} from "react-toastify";
@@ -83,6 +83,39 @@ function ArticleRow({value, index}: any) {
             )
         ).catch((err) => toast.error(err))
         promises.push(elementDeletionPromise)
+
+        toast.promise(
+            get(ref(getDatabase(), `/headline/${value.id}`)).then((response) => {
+                if (response.exists()) {
+                    remove(ref(getDatabase(), `/headline/${value.id}`))
+                }
+            }),
+            {
+                pending: "Rimozione dall'evidenza...",
+                success: "Rimosso dall'evidenza.",
+                error: "Questo articolo non è in evidenza (non è un errore)"
+            }
+        )
+
+        get(ref(getDatabase(), `/categories/${value.category}/`)).then((response) => {
+            if (response.exists()) {
+                let newVal = response.val()
+                let currentMedias: any[] = newVal.media
+
+                currentMedias.splice(
+                    currentMedias.findIndex((val) => val === value.id),
+                    1
+                )
+
+                toast.promise(
+                    set(ref(getDatabase(), `/categories/${value.category}/`), newVal),
+                    {
+                        pending: "Rimozione dalla categoria...",
+                        success: "Rimosso dalla categoria!",
+                        error: "Errore nella rimozione dalla categoria."
+                    })
+            }
+        })
 
         toast.promise(
             elementDeletionPromise,

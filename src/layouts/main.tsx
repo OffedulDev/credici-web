@@ -5,40 +5,54 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import {getAuth, onAuthStateChanged} from "firebase/auth";
 
 export default function MainLayout() {
-    const navigate = useNavigate()
-    let searchRef = useRef<HTMLInputElement>()
-    let { mode, setMode } = useColorScheme()
-    let logged = getAuth().currentUser !== null
+    const navigate = useNavigate();
+    let searchRef = useRef<HTMLInputElement>();
+    let { mode, setMode } = useColorScheme();
+    let logged = getAuth().currentUser !== null;
 
     return (
-        <>
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                minHeight: "100vh", // Ensures the layout takes the full height of the viewport
+            }}
+        >
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton onClick={() => {
-                        navigate("/")
-                    }}>
-                        <Newspaper sx={{
-                            color: "white",
-                            fontSize: "2rem"
-                        }}/>
-                    </IconButton>
-                    <Paper component="form" sx={{
-                        marginLeft: "1rem"
-                    }}>
-                        <InputBase 
-                            placeholder='Cerca'
+                    <IconButton
+                        onClick={() => {
+                            navigate("/");
+                        }}
+                    >
+                        <Newspaper
                             sx={{
-                                marginLeft: "0.5rem"
+                                color: "white",
+                                fontSize: "2rem",
+                            }}
+                        />
+                    </IconButton>
+                    <Paper
+                        component="form"
+                        sx={{
+                            marginLeft: "1rem",
+                        }}
+                    >
+                        <InputBase
+                            placeholder="Cerca"
+                            sx={{
+                                marginLeft: "0.5rem",
                             }}
                             inputRef={searchRef}
-
                             onChange={() => {
-                                if (!searchRef.current) { return }
-                                if (searchRef.current.value.trim().length <= 0) { 
-                                    navigate("/")
-                                    return 
+                                if (!searchRef.current) {
+                                    return;
                                 }
-                                navigate(`/search/${searchRef.current.value}`)
+                                if (searchRef.current.value.trim().length <= 0) {
+                                    navigate("/");
+                                    return;
+                                }
+                                navigate(`/search/${searchRef.current.value}`);
                             }}
                         />
                         <IconButton type="button">
@@ -46,46 +60,72 @@ export default function MainLayout() {
                         </IconButton>
                     </Paper>
                     <Tooltip title={logged ? "Pannello di gestione" : "Accedi"}>
-                        <IconButton style={{
-                            marginLeft: "auto"
-                        }} onClick={() => navigate(`/admin/dashboard/`)}>
-                            {logged ? <AdminPanelSettings style={{color: 'white'}} /> : <Login style={{color: "white"}} />}
+                        <IconButton
+                            style={{
+                                marginLeft: "auto",
+                            }}
+                            onClick={() => navigate(`/admin/dashboard/`)}
+                        >
+                            {logged ? (
+                                <AdminPanelSettings style={{ color: "white" }} />
+                            ) : (
+                                <Login style={{ color: "white" }} />
+                            )}
                         </IconButton>
                     </Tooltip>
-                    <IconButton onClick={() => {
-                        if (mode === "light") {
-                            setMode("dark")
-                        } else {
-                            setMode("light")
-                        }
-                    }}>
-                        {mode === "light" ? <DarkMode sx={{color: "white"}} /> : <LightMode />}
+                    <IconButton
+                        onClick={() => {
+                            if (mode === "light") {
+                                setMode("dark");
+                            } else {
+                                setMode("light");
+                            }
+                        }}
+                    >
+                        {mode === "light" ? (
+                            <DarkMode sx={{ color: "white" }} />
+                        ) : (
+                            <LightMode />
+                        )}
                     </IconButton>
                 </Toolbar>
             </AppBar>
-            <div style={{
-            }}>
+            {/* Main Content */}
+            <div
+                style={{
+                    flex: "1", // (it took so much to figure this out don't touch this)
+                }}
+            >
                 <Outlet />
             </div>
-            <div style={{
-                paddingTop: "4rem"
-            }}/>
-            <footer style={{
-                position: "fixed",
-                bottom: "0.35rem",
-                display: "flex",
-                alignItems: "center",
-                left: "50%",
-                transform: "translate(-50%, 0)",
-                justifyContent: "center",
-            }}>
-                <Typography variant="caption" align='center' padding="1rem" style={{
-                    textWrap: "nowrap",
-                    backgroundColor: mode === "dark" ? 'rgb(18, 18, 18)' : "white",
-                    color: mode === "dark" ? "white" : "black",
-                    borderRadius: "2rem"
-                }}><b>©2024 #Credici</b></Typography>
+            {/* Footer */}
+            <footer
+                style={{
+                    textAlign: "center",
+                    padding: "1rem"
+                }}
+            >
+                <Typography>
+                    <b>©2024 #Credici</b>
+                </Typography>
+                <span style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "0.25rem"
+                }}>
+                    <Typography>
+                        Made with ❤️ using
+                    </Typography>
+                    <Tooltip title={"React TypeScript"}>
+                        <img src="./react_logo.png" width={"25rem"}/>
+                    </Tooltip>
+                    <Typography>
+                        by <b>Filippo Caminati</b>
+                    </Typography>
+                </span>
             </footer>
-        </>
-    )
-} 
+        </div>
+    );
+}
+

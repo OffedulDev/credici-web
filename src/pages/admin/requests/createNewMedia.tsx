@@ -49,6 +49,7 @@ export const createNewMediaRequestRoute = {
                 "isHeadline": isHeadline,
                 "contentKind": contentKind,
                 "desc": desc,
+                "timestamp": Date.now().toString(),
                 "images": {
                   "header": (headerImage.name.trim().length > 0) ? `/headers/${id}` : false
                 } 
